@@ -371,7 +371,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           "Toggle_lang",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontSize: 18,
           ),
         ).tr(),
         SizedBox(height: 20),
@@ -418,7 +418,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-//git test
 
 
   @override
@@ -435,17 +434,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ListTile(
-            title: Text("Review", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)).tr(),
+            title: Text("Review", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)).tr(),
             onTap: _launchURL,
           ),
-          Divider(color: Colors.grey,height: 1, thickness: 3),
-          SizedBox(height: 20),
-          _buildLanguageToggle(),
-          SizedBox(height: 20),
-          Divider(color: Colors.grey,height: 1, thickness: 3),
+          Divider(color: Colors.grey,height: 1, thickness: 2),
           SizedBox(height: 10),
           SwitchListTile(
-            title: Text("Dark_Mode", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)).tr(),
+            title: Text("Dark_Mode", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)).tr(),
             value: isDarkMode,
             onChanged: (bool newValue) {
               setState(() {
@@ -455,10 +450,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           SizedBox(height: 10),
-          Divider(color: Colors.grey,height: 1, thickness: 3),
+          Divider(color: Colors.grey,height: 1, thickness: 2),
+          SizedBox(height: 20),
+          _buildLanguageToggle(),
+          SizedBox(height: 20),
+          Divider(color: Colors.grey,height: 1, thickness: 2),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text("Screenshot_manual", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)).tr(),
+            child: Text("Screenshot_manual", textAlign: TextAlign.center, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)).tr(),
           ),
           OutlinedButton(
             onPressed: () {
@@ -473,10 +472,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           SizedBox(height: 20),
-          Divider(color: Colors.grey,height: 1, thickness: 3),
+          Divider(color: Colors.grey,height: 1, thickness: 2),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text("Font_size", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)).tr(),
+            child: Text("Font_size", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)).tr(),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -504,10 +503,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           SizedBox(height: 20),
-          Divider(color: Colors.grey,height: 1, thickness: 3),
+          Divider(color: Colors.grey,height: 1, thickness: 2),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text("Aligning_text", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)).tr(),
+            child: Text("Aligning_text", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)).tr(),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -532,7 +531,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
           SizedBox(height: 20),
-          Divider(color: Colors.grey,height: 1, thickness: 3),
+          Divider(color: Colors.grey,height: 1, thickness: 2),
           SizedBox(height: 20),
           ElevatedButton(
             child: Text(
