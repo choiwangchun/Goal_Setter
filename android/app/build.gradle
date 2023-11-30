@@ -8,7 +8,7 @@ def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
     localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
+        localProperties.load(reader)s
     }
 }
 
@@ -20,12 +20,12 @@ if (keystorePropertiesFile.exists()) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '3'
+    flutterVersionCode = '4'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0.3'
+    flutterVersionName = '1.0.4'
 }
 
 
