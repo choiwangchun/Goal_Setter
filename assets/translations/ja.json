@@ -1,0 +1,22 @@
+{
+  "title" : "たった一つの目標を設定し\nロック画面に設定してください",
+  "enter_goal" : "達成したい目標を書いてください",
+  "Screenshot_manual_1" : "画面キャプチャ時に上部の\nステータスウィンドウを消す方法",
+  "Screenshot_manual_2" : "設定をクリック",
+  "Screenshot_manual_3" : "便利な機能をクリック",
+  "Screenshot_manual_4" : "画面キャプチャと画面録画をクリック",
+  "Screenshot_manual_5" : "ステータスバーとナビゲーションバーを隠す",
+  "Screenshot_manual_6" : "ステータスバーとナビゲーションバーを非表示にする",
+  "Toggle_lang" : "言語",
+  "Toggle_lang_en" : "英語",
+  "Toggle_lang_ko" : "韓国語",
+  "Toggle_lang_zh" : "中国語",
+  "Toggle_lang_ja" : "日本語",
+  "Review" : "レビューと応援を書く",
+  "Dark_Mode" : "ダークモード",
+  "Screenshot_manual" : "画面キャプチャする時、上部の\nステータスウィンドウを消す方法",
+  "Android" : "アンドロイド",
+  "Font_size" : "フォントサイズの設定",
+  "Aligning_text" : "テキストの整列",
+  "Apply" : "適用"
+}
