@@ -8,7 +8,7 @@ class NotificationSetting extends StatefulWidget {
 }
 
 class _NotificationSettingState extends State<NotificationSetting> {
-  int selectedNotificationTime = 60; // 기본 알림 시간 설정
+  int selectedNotificationTime = 1;
 
   @override
   void initState() {
@@ -19,7 +19,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
   // SharedPreferences에서 저장된 알림 간격을 불러오는 메서드
   void _loadNotificationInterval() async {
     final prefs = await SharedPreferences.getInstance();
-    int savedInterval = prefs.getInt('notification_interval') ?? 60; // 기본값 60초
+    int savedInterval = prefs.getInt('notification_interval') ?? 8; // 기본값을 1시간으로 설정
     setState(() {
       selectedNotificationTime = savedInterval;
     });
@@ -27,9 +27,9 @@ class _NotificationSettingState extends State<NotificationSetting> {
 
   String getNotificationTimeText() {
     if (selectedNotificationTime == 0) {
-      return '알림 없음';
+      return "No_notifications".tr();
     }
-    return '${selectedNotificationTime}초';
+    return '${selectedNotificationTime}'+"Time".tr();
   }
 
   @override
@@ -48,15 +48,18 @@ class _NotificationSettingState extends State<NotificationSetting> {
               ),
               child: ListTile(
                 title: Text(
-                  '알림 간격',
+                  "Notification_interval",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
+                ).tr(),
                 subtitle: Text(getNotificationTimeText()),
                 trailing: Icon(Icons.keyboard_arrow_down),
                 onTap: () async {
                   final prefs = await SharedPreferences.getInstance();
                   showModalBottomSheet(
                     context: context,
+                    shape: RoundedRectangleBorder( // 여기에 모서리를 둥글게 만드는 속성을 추가합니다.
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(30.0)), // 상단 모서리만 둥글게 설정
+                    ),
                     builder: (BuildContext context) {
                       return SizedBox(
                         height: 200,
@@ -65,15 +68,21 @@ class _NotificationSettingState extends State<NotificationSetting> {
                           physics: FixedExtentScrollPhysics(),
                           onSelectedItemChanged: (index) async {
                             setState(() {
-                              selectedNotificationTime = index; // 초 단위로 설정
+                              selectedNotificationTime = index; // 시간 단위로 설정
                             });
                             await prefs.setInt('notification_interval', selectedNotificationTime);
                           },
                           childDelegate: ListWheelChildBuilderDelegate(
                             builder: (BuildContext context, int index) {
-                              return Center(child: Text('${index}초'));
+                              String text = index == 0 ? "No_notifications".tr() : '${index}'+"Time".tr();
+                              return Column(
+                                children: [
+                                  Expanded(child: Center(child: Text(text))),
+                                  if (index < 24) Divider(color: Colors.grey, thickness: 0.5), // 마지막 항목에는 Divider를 추가하지 않습니다.
+                                ],
+                              );
                             },
-                            childCount: 61, // 0초부터 60초까지
+                            childCount: 25, // 0초부터 60초까지
                           ),
                         ),
                       );
@@ -93,6 +102,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
               onPressed: () async {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setInt('notification_interval', selectedNotificationTime);
+                print(selectedNotificationTime);
                 Navigator.pop(context);
               },
             ),

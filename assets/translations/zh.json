@@ -19,5 +19,9 @@
   "Font_size" : "字体大小设置",
   "Aligning_text" : "对齐文本",
   "Apply" : "应用",
-  "Font_setting" : "字体设置"
+  "Font_setting" : "字体设置",
+  "Notification_setting" : "设置通知",
+  "Notification_interval" : "通知间隔",
+  "No_notifications" : "无通知",
+  "Time" : "小时"
 }

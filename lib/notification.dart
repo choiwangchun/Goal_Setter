@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationService {
   // 싱글톤 패턴을 사용하기 위한 private static 변수
@@ -51,6 +52,13 @@ class NotificationService {
   }
 
   Future<void> regular_showNotification(int targetNumber, String text) async {
+    final prefs = await SharedPreferences.getInstance();
+    int notificationInterval = prefs.getInt('notification_interval') ?? 8;
+
+    // 알림 간격이 0이면 (알림 없음) 알림을 전송하지 않습니다.
+    if (notificationInterval == 0) {
+      return;
+    }
     // 푸시 알림의 ID
     const int notificationId = 0;
     // 알림 채널 설정값 구성

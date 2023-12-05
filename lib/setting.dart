@@ -172,7 +172,7 @@
             SizedBox(height: 5),
             Divider(color: Colors.grey,height: 1, thickness: 2),
             ListTile(
-              title: Text('알림설정', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              title: Text("Notification_setting", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)).tr(),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(

@@ -23,7 +23,7 @@ void main() async {
     EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ko'), Locale('zh'), Locale('ja')],
       path: 'assets/translations', // JSON 파일 경로
-      fallbackLocale: Locale('en', 'US'),
+      fallbackLocale: Locale('en'),
       child: MyApp(),
     ),
   );
@@ -51,11 +51,15 @@ class _MyAppState extends State<MyApp> {
 
   void _startNotificationTimer() async {
     final prefs = await SharedPreferences.getInstance();
-    int interval = prefs.getInt('notification_interval') ?? 60; // 기본값 60초
+    int interval = prefs.getInt('notification_interval') ?? 8; // 기본값을 1시간으로 설정
 
-    notificationTimer = Timer.periodic(Duration(seconds: interval), (timer) async {
-      String userGoal = prefs.getString('enter_goal') ?? "기본 목표"; // 저장된 목표 불러오기
-      NotificationService().regular_showNotification(0, userGoal); // 저장된 목표를 알림 내용으로 사용
+    // 시간 단위를 초 단위로 변환합니다.
+    int intervalInSeconds = interval * 3600;
+
+    notificationTimer?.cancel(); // 이전 타이머가 있다면 취소합니다.
+    notificationTimer = Timer.periodic(Duration(seconds: intervalInSeconds), (timer) async {
+      String userGoal = prefs.getString('enter_goal') ?? "새로운 목표를 설정해 주세요";
+      NotificationService().regular_showNotification(0, userGoal);
     });
   }
 

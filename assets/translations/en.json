@@ -19,5 +19,9 @@
   "Font_size" : "Font size",
   "Aligning_text" : "Aligning text",
   "Apply" : "Apply",
-  "Font_setting" : "Font settings"
+  "Font_setting" : "Font settings",
+  "Notification_setting" : "Notification setting",
+  "Notification_interval" : "Notification interval",
+  "No_notifications" : "No notifications",
+  "Time" : "hour"
 }

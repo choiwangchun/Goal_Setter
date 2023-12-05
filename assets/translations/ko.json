@@ -19,5 +19,9 @@
   "Font_size" : "글씨 크기",
   "Aligning_text" : "텍스트 정렬",
   "Apply" : "적용",
-  "Font_setting" : "글씨 설정"
+  "Font_setting" : "글씨 설정",
+  "Notification_setting" : "알림 설정",
+  "Notification_interval" : "알림 간격",
+  "No_notifications" : "알림 없음",
+  "Time" : "시간"
 }
