@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     int interval = prefs.getInt('notification_interval') ?? 8; // 기본값을 1시간으로 설정
 
     // 시간 단위를 초 단위로 변환합니다.
-    int intervalInSeconds = interval * 3600;
+    int intervalInSeconds = interval * 60;
 
     notificationTimer?.cancel(); // 이전 타이머가 있다면 취소합니다.
     notificationTimer = Timer.periodic(Duration(seconds: intervalInSeconds), (timer) async {

@@ -195,9 +195,17 @@ class _FontSettingsScreenState extends State<FontSettingsScreen> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: "Enter_Text".tr(), // 텍스트 필드 레이블
-                      labelStyle: TextStyle(color: Colors.white),
-                      focusedBorder: OutlineInputBorder( // 포커스 상태일 때의 테두리 스타일
-                        borderSide: BorderSide(color: Colors.teal, width: 1.0),
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white // 다크 모드일 때 흰색
+                              : Colors.grey // 라이트 모드일 때 회색
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.teal // 다크 모드일 때 teal 색상
+                                : Colors.grey, // 라이트 모드일 때 기본 색상
+                            width: 1.0),
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(Icons.done, color: iconColor),
