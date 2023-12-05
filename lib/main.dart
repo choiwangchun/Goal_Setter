@@ -219,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.all(55.0),
+              padding: const EdgeInsets.all(38.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -237,9 +237,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   TextField(
                     controller: controller,
                     focusNode: focusNode,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
                     decoration: InputDecoration(
                       hintText: "enter_goal".tr(),
                       prefixIcon: Icon(Icons.flag, color: iconColor),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.done, color: iconColor),
+                        onPressed: () {
+                          _saveGoal(controller.text);
+                          focusNode.unfocus();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => NewScreen(
+                                text: controller.text,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                         borderSide: BorderSide.none,
@@ -251,13 +267,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (text.isNotEmpty) {
                         _saveGoal(text);
                         focusNode.unfocus();
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => NewScreen(
-                              text: controller.text,
-                            ),
-                          ),
-                        );
                       }
                     },
                   ),

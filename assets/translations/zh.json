@@ -23,5 +23,6 @@
   "Notification_setting" : "设置通知",
   "Notification_interval" : "通知间隔",
   "No_notifications" : "无通知",
-  "Time" : "小时"
+  "Time" : "小时",
+  "Enter_Text" : "输入文本"
 }

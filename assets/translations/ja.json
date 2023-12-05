@@ -23,5 +23,6 @@
   "Notification_setting" : "设置通知",
   "Notification_interval" : "通知間隔",
   "No_notifications" : "通知なし",
-  "Time" : "時"
+  "Time" : "時",
+  "Enter_Text" : "テキスト入力"
 }

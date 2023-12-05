@@ -17,6 +17,7 @@ class FontSettingsScreen extends StatefulWidget {
 }
 
 class _FontSettingsScreenState extends State<FontSettingsScreen> {
+  final FocusNode focusNode = FocusNode();
   double currentFontSize = 18;
   TextAlignment currentAlignment = TextAlignment.center;
   String sampleText = 'Sample\nText';
@@ -186,13 +187,27 @@ class _FontSettingsScreenState extends State<FontSettingsScreen> {
                 ),
                 SizedBox(height: 30),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 20.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
                   child: TextField(
                     controller: textController,
+                    keyboardType: TextInputType.multiline, // 다중 줄 입력 활성화
+                    maxLines: null, // 최대 줄 수 제한 없음
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Enter Text', // 텍스트 필드 레이블
+                      labelText: "Enter_Text".tr(), // 텍스트 필드 레이블
+                      labelStyle: TextStyle(color: Colors.white),
+                      focusedBorder: OutlineInputBorder( // 포커스 상태일 때의 테두리 스타일
+                        borderSide: BorderSide(color: Colors.teal, width: 1.0),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.done, color: iconColor),
+                        onPressed: () {
+                          setState(() {
+                            sampleText = textController.text; // 현재 텍스트를 업데이트
+                            focusNode.unfocus(); // 키보드 숨기기
+                          });
+                        },
+                      ),
                     ),
                     onSubmitted: (String newText) {
                       setState(() {
