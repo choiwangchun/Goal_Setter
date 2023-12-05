@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:goal_setter/goal_screen.dart';
+import 'package:goal_setter/notification.dart';
+import 'package:goal_setter/setting.dart';
+import 'package:goal_setter/test.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -6,11 +10,15 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 // ca-app-pub-3940256099942544/6300978111
 
 void main() async {
+  final notificationService = NotificationService();
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await notificationService.init();
   runApp(
     EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ko'), Locale('zh'), Locale('ja')],
@@ -22,7 +30,6 @@ void main() async {
 }
 
 
-enum TextAlignment { left, center, right }
 
 class MyApp extends StatefulWidget {
   @override
@@ -32,11 +39,24 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isDarkMode = false; // 테마 상태를 저장하는 변수
   bool _isFeatureEnabled = false;
+  Timer? notificationTimer;
+
   @override
   void initState() {
     super.initState();
     _loadDarkMode();
     _loadFeatureStatus();
+    _startNotificationTimer();
+  }
+
+  void _startNotificationTimer() async {
+    final prefs = await SharedPreferences.getInstance();
+    int interval = prefs.getInt('notification_interval') ?? 60; // 기본값 60초
+
+    notificationTimer = Timer.periodic(Duration(seconds: interval), (timer) async {
+      String userGoal = prefs.getString('enter_goal') ?? "기본 목표"; // 저장된 목표 불러오기
+      NotificationService().regular_showNotification(0, userGoal); // 저장된 목표를 알림 내용으로 사용
+    });
   }
 
   void _loadFeatureStatus() async {
@@ -58,6 +78,7 @@ class _MyAppState extends State<MyApp> {
   }
 
 
+
   void toggleTheme(bool isOn) {
     setState(() {
       _isDarkMode = isOn;
@@ -76,6 +97,11 @@ class _MyAppState extends State<MyApp> {
   }
 
 
+  @override
+  void dispose() {
+    notificationTimer?.cancel(); // 타이머 정리
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +152,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
+
+  Future<void> _saveGoal(String goal) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('enter_goal', goal);
+  }
+
+  Future<String> _loadGoal() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('enter_goal') ?? '기본 목표';
+  }
+
   TextAlign getTextAlign(TextAlignment alignment) {
     switch (alignment) {
       case TextAlignment.left:
@@ -135,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case TextAlignment.right:
         return TextAlign.right;
       default:
-        return TextAlign.left;
+        return TextAlign.center;
     }
   }
 
@@ -145,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Color iconColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
     Color buttonTextColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
     Color buttonBorderColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
-    Color fillColor = Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.black26;
+    Color fillColor = Theme.of(context).brightness == Brightness.dark ? Colors.black26 : Colors.black26;
 
     return Scaffold(
       body: Stack(
@@ -208,13 +245,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     onSubmitted: (String text) {
                       if (text.isNotEmpty) {
+                        _saveGoal(text);
                         focusNode.unfocus();
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => NewScreen(
-                              text: text,
-                              fontSize: fontSize,
-                              textAlign: getTextAlign(textAlignment),
+                              text: controller.text,
                             ),
                           ),
                         );
@@ -225,328 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class NewScreen extends StatelessWidget {
-  final String text;
-  final double fontSize;
-  final TextAlign textAlign;
-
-  NewScreen({required this.text, required this.fontSize, required this.textAlign});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(
-          text,
-          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
-          textAlign: textAlign,
-        ),
-      ),
-    );
-  }
-}
-
-class description extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text("Screenshot_manual_1", textAlign: TextAlign.center, style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)).tr(),
-            ),
-            SizedBox(height: 10),
-            _buildRoundedImage('assets/images/1.png'),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text("Screenshot_manual_2", style: TextStyle(fontSize: 20)).tr(),
-            ),
-            SizedBox(height: 30),
-            _buildRoundedImage('assets/images/2.png'),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text("Screenshot_manual_3", style: TextStyle(fontSize: 20)).tr(),
-            ),
-            SizedBox(height: 30),
-            _buildRoundedImage('assets/images/3.png'),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text("Screenshot_manual_4", style: TextStyle(fontSize: 20)).tr(),
-            ),
-            SizedBox(height: 30),
-            _buildRoundedImage('assets/images/4.png'),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text("Screenshot_manual_5", style: TextStyle(fontSize: 20)).tr(),
-            ),
-            SizedBox(height: 30),
-            _buildRoundedImage('assets/images/5.png'),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text("Screenshot_manual_6", style: TextStyle(fontSize: 20)).tr(),
-            ),
-            SizedBox(height: 30),
-          ],
-        ),
-      ),
-    );
-  }
-  Widget _buildRoundedImage(String imagePath) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0), // 좌우 여백
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(15.0), // 라운드된 모서리
-        child: Image.asset(imagePath),
-      ),
-    );
-  }
-}
-
-
-class SettingsScreen extends StatefulWidget {
-  final double fontSize;
-  final TextAlignment alignment;
-  final Function(double, TextAlignment) onSettingsChanged;
-  final Function(bool) toggleTheme;
-  final bool isDarkMode;
-
-  SettingsScreen({required this.fontSize, required this.alignment, required this.onSettingsChanged, required this.toggleTheme, required this.isDarkMode});
-
-  @override
-  _SettingsScreenState createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  late double currentFontSize;
-  late TextAlignment currentAlignment;
-  late bool isDarkMode;
-  int _selectedLanguageIndex = 0; // 0: English, 1: Korean, 2: china, 3: japan
-
-
-  @override
-  void initState() {
-    super.initState();
-    currentFontSize = widget.fontSize;
-    currentAlignment = widget.alignment;
-    isDarkMode = widget.isDarkMode;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        final code = EasyLocalization.of(context)?.locale.languageCode;
-        if (code == 'ko') {
-          _selectedLanguageIndex = 1;
-        } else if (code == 'zh') {
-          _selectedLanguageIndex = 2;
-        } else if (code == 'ja') {
-          _selectedLanguageIndex = 3;
-        } else {
-          _selectedLanguageIndex = 0; // Default to English if no match found
-        }
-      });
-    });
-  }
-
-  Future<void> _launchURL() async {
-    const url = 'https://play.google.com/store/apps/details?id=com.goal_setter.goal_setter';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-  Widget _buildLanguageToggle() {
-    return Column(
-      children: [
-        Text(
-          "Toggle_lang",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ).tr(),
-        SizedBox(height: 20),
-        ToggleSwitch(
-          minWidth: 90.0,
-          cornerRadius: 20.0,
-          activeBgColors: [
-            [Theme.of(context).brightness == Brightness.dark ? Colors.teal : Colors.black],
-            [Theme.of(context).brightness == Brightness.dark ? Colors.teal : Colors.black],
-            [Theme.of(context).brightness == Brightness.dark ? Colors.teal : Colors.black],
-            [Theme.of(context).brightness == Brightness.dark ? Colors.teal : Colors.black]
-          ],
-          activeFgColor: Colors.white,
-          inactiveBgColor: Colors.grey,
-          inactiveFgColor: Colors.white,
-          initialLabelIndex: _selectedLanguageIndex,
-          totalSwitches: 4,
-          labels: ["Toggle_lang_en".tr(), "Toggle_lang_ko".tr(), "Toggle_lang_zh".tr(), "Toggle_lang_ja".tr()],
-          onToggle: (index) {
-            setState(() {
-              _selectedLanguageIndex = index!;
-              Locale newLocale;
-              switch (index) {
-                case 0:
-                  newLocale = Locale('en');
-                  break;
-                case 1:
-                  newLocale = Locale('ko');
-                  break;
-                case 2:
-                  newLocale = Locale('zh');
-                  break;
-                case 3:
-                  newLocale = Locale('ja');
-                  break;
-                default:
-                  newLocale = Locale('en');
-              }
-              context.setLocale(newLocale);
-            });
-          },
-        ),
-      ],
-    );
-  }
-
-
-
-  @override
-  Widget build(BuildContext context) {
-    Color buttonTextColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
-    Color buttonBorderColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
-    Color textColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
-    Color iconColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
-    Color sliderActiveColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
-    Color sliderInactiveColor = Theme.of(context).brightness == Brightness.dark ? Colors.white30 : Colors.black26;
-
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ListTile(
-            title: Text("Review", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)).tr(),
-            onTap: _launchURL,
-          ),
-          Divider(color: Colors.grey,height: 1, thickness: 2),
-          SizedBox(height: 10),
-          SwitchListTile(
-            title: Text("Dark_Mode", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)).tr(),
-            value: isDarkMode,
-            onChanged: (bool newValue) {
-              setState(() {
-                isDarkMode = newValue;
-                widget.toggleTheme(newValue); // 상위 위젯에 변경 알림
-              });
-            },
-          ),
-          SizedBox(height: 10),
-          Divider(color: Colors.grey,height: 1, thickness: 2),
-          SizedBox(height: 20),
-          _buildLanguageToggle(),
-          SizedBox(height: 20),
-          Divider(color: Colors.grey,height: 1, thickness: 2),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text("Screenshot_manual", textAlign: TextAlign.center, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)).tr(),
-          ),
-          OutlinedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => description()),
-              );
-            },
-            child: Text("Android", style: TextStyle(color: buttonTextColor)).tr(),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: buttonBorderColor),
-            ),
-          ),
-          SizedBox(height: 20),
-          Divider(color: Colors.grey,height: 1, thickness: 2),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text("Font_size", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)).tr(),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Slider(
-                    value: currentFontSize,
-                    min: 10,
-                    max: 72,
-                    divisions: 62,
-                    label: currentFontSize.round().toString(),
-                    onChanged: (newFontSize) {
-                      setState(() {
-                        currentFontSize = newFontSize;
-                      });
-                    },
-                    activeColor: sliderActiveColor,
-                    inactiveColor: sliderInactiveColor,
-                  ),
-                ),
-                SizedBox(width: 10), // Slider와 Text 사이의 공간
-                Text('${currentFontSize.round()} px', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
-              ],
-            ),
-          ),
-          SizedBox(height: 20),
-          Divider(color: Colors.grey,height: 1, thickness: 2),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text("Aligning_text", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)).tr(),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(Icons.format_align_left),
-                onPressed: () => setState(() => currentAlignment = TextAlignment.left),
-                color: currentAlignment == TextAlignment.left ? iconColor : Colors.grey[500],
-              ),
-              SizedBox(width: 50),
-              IconButton(
-                icon: Icon(Icons.format_align_center),
-                onPressed: () => setState(() => currentAlignment = TextAlignment.center),
-                color: currentAlignment == TextAlignment.center ? iconColor : Colors.grey[500],
-              ),
-              SizedBox(width: 50),
-              IconButton(
-                icon: Icon(Icons.format_align_right),
-                onPressed: () => setState(() => currentAlignment = TextAlignment.right),
-                color: currentAlignment == TextAlignment.right ? iconColor : Colors.grey[500],
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          Divider(color: Colors.grey,height: 1, thickness: 2),
-          SizedBox(height: 20),
-          ElevatedButton(
-            child: Text(
-              "Apply",
-              style: TextStyle(fontSize: 16), // 텍스트의 크기를 조정합니다.
-            ).tr(),
-            style: ElevatedButton.styleFrom(
-              primary: Colors.black, // 버튼 배경을 검정색으로 설정
-              padding: EdgeInsets.symmetric(horizontal: 28, vertical: 10), // 버튼 내부의 패딩을 설정
-              minimumSize: Size(130, 45), // 버튼의 최소 크기를 설정
-            ),
-            onPressed: () {
-              widget.onSettingsChanged(currentFontSize, currentAlignment);
-              Navigator.pop(context);
-            },
           ),
         ],
       ),
