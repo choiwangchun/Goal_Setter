@@ -9,7 +9,7 @@ class GoogleAdMob {
   static BannerAd loadBannerAd() {
     // 배너 광고
     BannerAd myBanner = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111', // 내 리워드 광고 통합 APP ID
+      adUnitId: 'APP ID', // 내 리워드 광고 통합 APP ID
       /*
       크기(폭x높이)        설명               AdSize 상수
       -----------------------------------------------------------------------
