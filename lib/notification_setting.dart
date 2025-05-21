@@ -3,6 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class NotificationSetting extends StatefulWidget {
+  final Function() startNotificationTimer; // Add this line
+
+  NotificationSetting({required this.startNotificationTimer}); // Add this line
+
   @override
   _NotificationSettingState createState() => _NotificationSettingState();
 }
@@ -70,7 +74,9 @@ class _NotificationSettingState extends State<NotificationSetting> {
                             setState(() {
                               selectedNotificationTime = index; // 시간 단위로 설정
                             });
-                            await prefs.setInt('notification_interval', selectedNotificationTime);
+                            // Re-fetch prefs to ensure it's the mocked instance in tests
+                            final currentPrefs = await SharedPreferences.getInstance();
+                            await currentPrefs.setInt('notification_interval', index);
                           },
                           childDelegate: ListWheelChildBuilderDelegate(
                             builder: (BuildContext context, int index) {
@@ -95,13 +101,14 @@ class _NotificationSettingState extends State<NotificationSetting> {
             ElevatedButton(
               child: Text("Apply", style: TextStyle(fontSize: 16)).tr(),
               style: ElevatedButton.styleFrom(
-                primary: Colors.black,
+                backgroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: 28, vertical: 10),
                 minimumSize: Size(130, 45),
               ),
               onPressed: () async {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setInt('notification_interval', selectedNotificationTime);
+                widget.startNotificationTimer(); // Add this line
                 print(selectedNotificationTime);
                 Navigator.pop(context);
               },

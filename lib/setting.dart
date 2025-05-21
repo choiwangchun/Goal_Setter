@@ -19,8 +19,16 @@
     final Function(double, TextAlignment) onSettingsChanged;
     final Function(bool) toggleTheme;
     final bool isDarkMode;
+    final Function() startNotificationTimer; // Add this
 
-    SettingsScreen({required this.fontSize, required this.alignment, required this.onSettingsChanged, required this.toggleTheme, required this.isDarkMode});
+    SettingsScreen({
+      required this.fontSize,
+      required this.alignment,
+      required this.onSettingsChanged,
+      required this.toggleTheme,
+      required this.isDarkMode,
+      required this.startNotificationTimer, // Add this
+    });
 
     @override
     _SettingsScreenState createState() => _SettingsScreenState();
@@ -176,7 +184,9 @@
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => NotificationSetting(),
+                    builder: (context) => NotificationSetting(
+                      startNotificationTimer: widget.startNotificationTimer, // Add this
+                    ),
                   ),
                 );
               },
@@ -212,7 +222,7 @@
                 style: TextStyle(fontSize: 16), // 텍스트의 크기를 조정합니다.
               ).tr(),
               style: ElevatedButton.styleFrom(
-                primary: Colors.black, // 버튼 배경을 검정색으로 설정
+                backgroundColor: Colors.black, // 버튼 배경을 검정색으로 설정
                 padding: EdgeInsets.symmetric(horizontal: 28, vertical: 10), // 버튼 내부의 패딩을 설정
                 minimumSize: Size(130, 45), // 버튼의 최소 크기를 설정
               ),

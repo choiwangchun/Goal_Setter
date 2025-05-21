@@ -231,7 +231,7 @@ class _FontSettingsScreenState extends State<FontSettingsScreen> {
                     style: TextStyle(fontSize: 16), // 텍스트의 크기를 조정합니다.
                   ).tr(),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.black,
+                    backgroundColor: Colors.black,
                     // 버튼 배경을 검정색으로 설정
                     padding: EdgeInsets.symmetric(horizontal: 28, vertical: 10),
                     // 버튼 내부의 패딩을 설정

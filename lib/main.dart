@@ -32,6 +32,7 @@ void main() async {
 
 
 class MyApp extends StatefulWidget {
+  static bool testHook_timerWasReset = false; // For testing // MOVED HERE
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -40,16 +41,18 @@ class _MyAppState extends State<MyApp> {
   bool _isDarkMode = false; // 테마 상태를 저장하는 변수
   bool _isFeatureEnabled = false;
   Timer? notificationTimer;
+  // static bool testHook_timerWasReset = false; // For testing // MOVED TO MyApp
 
   @override
   void initState() {
     super.initState();
+    MyApp.testHook_timerWasReset = false; // Reset for test
     _loadDarkMode();
     _loadFeatureStatus();
-    _startNotificationTimer();
+    startNotificationTimer(); // Made public
   }
 
-  void _startNotificationTimer() async {
+  void startNotificationTimer() async { // Made public
     final prefs = await SharedPreferences.getInstance();
     int interval = prefs.getInt('notification_interval') ?? 8; // 기본값을 1시간으로 설정
 
@@ -57,6 +60,7 @@ class _MyAppState extends State<MyApp> {
     int intervalInSeconds = interval * 60;
 
     notificationTimer?.cancel(); // 이전 타이머가 있다면 취소합니다.
+    MyApp.testHook_timerWasReset = true; // Set for test
     notificationTimer = Timer.periodic(Duration(seconds: intervalInSeconds), (timer) async {
       String userGoal = prefs.getString('enter_goal') ?? "새로운 목표를 설정해 주세요";
       NotificationService().regular_showNotification(0, userGoal);
@@ -126,7 +130,7 @@ class _MyAppState extends State<MyApp> {
           selectionColor: _isDarkMode ? Colors.white38 : Colors.black12, // 다크 모드에 맞는 선택 색상
         ),
       ),
-      home: HomeScreen(toggleTheme: toggleTheme, isDarkMode: _isDarkMode),
+      home: HomeScreen(toggleTheme: toggleTheme, isDarkMode: _isDarkMode, startNotificationTimer: startNotificationTimer), // Pass public method
     );
   }
 }
@@ -134,8 +138,9 @@ class _MyAppState extends State<MyApp> {
 class HomeScreen extends StatefulWidget {
   final Function(bool) toggleTheme;
   final bool isDarkMode;
+  final Function() startNotificationTimer; // Add this line
 
-  HomeScreen({required this.toggleTheme, required this.isDarkMode});
+  HomeScreen({required this.toggleTheme, required this.isDarkMode, required this.startNotificationTimer}); // Add startNotificationTimer here
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -210,7 +215,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         });
                       },
                       toggleTheme: widget.toggleTheme,
-                      isDarkMode: widget.isDarkMode,// toggleTheme 파라미터 추가
+                      isDarkMode: widget.isDarkMode, // toggleTheme 파라미터 추가
+                      startNotificationTimer: widget.startNotificationTimer, // Pass the function here
                     ),
                   ),
                 );
